@@ -72,6 +72,24 @@ docker run crawlergo http://testphp.vulnweb.com/
 bin/crawlergo -c /tmp/chromium/chrome -t 10 --request-proxy socks5://127.0.0.1:7891 http://testphp.vulnweb.com/
 ```
 
+### Batch crawl from file
+
+Read targets from file with one URL per line:
+
+```shell
+bin/crawlergo -i urls.txt -c /tmp/chromium/chrome -o txt --output-txt all_result.txt -t 10
+```
+
+`urls.txt` format:
+
+```text
+http://vulnweb.com/
+http://testhtml5.vulnweb.com/
+http://testasp.vulnweb.com/
+```
+
+When `-o txt` is used, output is one URL per line (deduplicated URL strings from `req_list`).
+
 
 ### Calling crawlergo with python
 
@@ -176,15 +194,17 @@ https://intoli.com/blog/not-possible-to-block-chrome-headless/chrome-headless-te
 ### Basic parameters
 * `--custom-headers Headers`   Customize the HTTP header. Please pass in the data after JSON serialization, this is globally defined and will be used for all requests. (Default: null)
 * `--post-data PostData, -d PostData`   POST data. (Default: null)
+* `--input-file Path, -i Path`  Read targets from a file. One URL per line. Empty lines and lines prefixed with `#` are ignored. (Default: null)
 * `--max-crawled-count Number, -m Number`    The maximum number of tasks for crawlers to avoid long crawling time due to pseudo-static. (Default: 200)
 * `--filter-mode Mode, -f Mode`   Filtering mode, `simple`: only static resources and duplicate requests are filtered.  `smart`: with the ability to filter pseudo-static. `strict`: stricter pseudo-static filtering rules. (Default: smart)
-* `--output-mode value, -o value`   Result output mode, `console`: print the glorified results directly to the screen. `json`: print the json serialized string of all results.  `none`: don't print the output. (Default: console)
+* `--output-mode value, -o value`   Result output mode, `console`: print requests to screen; `json`: print serialized result; `txt`: print one URL per line; `none`: no stdout output. (Default: console)
 * `--output-json filepath` Write the result to the specified file after JSON serializing it. (Default: null)
+* `--output-txt filepath` Write text output to a file. If omitted and `-o txt` is set, default output file is `crawlergo_result.txt` or `crawlergo_batch_result.txt` in batch mode.
 * `--request-proxy proxyAddress` socks5 proxy address, all network requests from crawlergo and chrome browser are sent through the proxy. (Default: null)
 
 ### Expand input URL
-* `--fuzz-path`  Use the built-in dictionary for path fuzzing. (Default: false)
-* `--fuzz-path-dict`  Customize the Fuzz path by passing in a dictionary file path, e.g. /home/user/fuzz_dir.txt, each line of the file represents a path to be fuzzed. (Default: null)
+* `--fuzz-path`  Use built-in dictionary for root-path fuzzing (`scheme://host/FUZZ`). (Default: false)
+* `--fuzz-path-dict`  Use custom path dictionary for root-path fuzzing, e.g. `/home/user/fuzz_dir.txt`. Each line is one path token, such as `admin`, `api/v1`, `backup.zip`. (Default: null)
 * `--robots-path` Resolve the path from the /robots.txt file. (Default: false)
 
 ### Form auto-fill

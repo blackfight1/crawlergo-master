@@ -374,8 +374,14 @@ func writeTxtResult(result *pkg.Result, isBatchMode bool) {
 
 func getTXTSerialize(result *pkg.Result) string {
 	var builder strings.Builder
+	seen := make(map[string]struct{})
 	for _, req := range result.ReqList {
-		builder.WriteString(req.SimpleFormat())
+		urlStr := req.URL.String()
+		if _, ok := seen[urlStr]; ok {
+			continue
+		}
+		seen[urlStr] = struct{}{}
+		builder.WriteString(urlStr)
 		builder.WriteString("\n")
 	}
 	return builder.String()
